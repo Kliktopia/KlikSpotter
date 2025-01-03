@@ -1,0 +1,8 @@
+{
+    "profiles": {
+        "KlikSpotter": {
+            "commandName": "Project",
+            "commandLineArgs": "-r C:\\Temp\\Sopor\\KlikTest --file-logging"
+        }
+    }
+}

@@ -1,0 +1,7 @@
+<linker>
+  <assembly fullname="KlikSpotter">
+    <type fullname="KlikSpotter.AppParameters" preserve="all" />
+  </assembly>
+  <assembly fullname="Cocona.Core" preserve="all" />
+  <assembly fullname="Cocona" preserve="all" />
+</linker>

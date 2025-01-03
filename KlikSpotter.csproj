@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<!-- Framework and Output Settings -->
+		<TargetFramework>net9.0-windows</TargetFramework>
+		<OutputType>Exe</OutputType>
+		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+		<PublishTrimmed>True</PublishTrimmed>
+		<TrimMode>full</TrimMode>
+
+		<!-- Nullable and Unsafe Settings -->
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+
+		<!-- NuGet Settings -->
+		<NuGetAuditMode>direct</NuGetAuditMode>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DebugType>none</DebugType>
+		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Properties\ILLink.Descriptors.xml">
+			<LogicalName>ILLink.Descriptors.xml</LogicalName>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Cocona" Version="2.2.0" />
+		<PackageReference Include="SharpCompress" Version="0.38.0" />
+	</ItemGroup>
+
+</Project>
