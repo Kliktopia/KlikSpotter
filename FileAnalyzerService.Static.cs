@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Runtime.CompilerServices;
 using KlikSpotter.Logging;
 
@@ -128,13 +129,13 @@ internal partial class FileAnalyzerService
             "uninstall.bin"
         ];
 
-        _installMakerPattern = 
+        _installMakerPattern =
         [
-            0x77, 
-            0x77, 
-            0x67, 
-            0x54, 
-            0x29, 
+            0x77,
+            0x77,
+            0x67,
+            0x54,
+            0x29,
             0x48
         ];
 
@@ -171,7 +172,7 @@ internal partial class FileAnalyzerService
                 ]
             ),
             (
-                "KNPICON",
+                "KNP_ICON",
                 [
                     0x28, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x20, 0x00,
                     0x00, 0x00, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -206,7 +207,7 @@ internal partial class FileAnalyzerService
                 ]
             ),
             (
-                "TGFICON",
+                "TGF_ICON",
                 [
                     0x28, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x20, 0x00,
                     0x00, 0x00, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -241,7 +242,7 @@ internal partial class FileAnalyzerService
                 ]
             ),
             (
-                "CNCICON",
+                "CNC_ICON",
                 [
                     0x28, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x20, 0x00,
                     0x00, 0x00, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -276,7 +277,7 @@ internal partial class FileAnalyzerService
                 ]
             ),
             (
-                "MMF15ICON",
+                "MMF15_ICON",
                 [
                     0x28, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x20, 0x00,
                     0x00, 0x00, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -311,7 +312,7 @@ internal partial class FileAnalyzerService
                 ]
             ),
             (
-                "MMF20ICON",
+                "MMF20_ICON",
                 [
                     0x28, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x20, 0x00,
                     0x00, 0x00, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -346,7 +347,7 @@ internal partial class FileAnalyzerService
                 ]
             ),
             (
-                "MMFEXPRESSICON",
+                "MMFEXPRESS_ICON",
                 [
                     0x28, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x20, 0x00,
                     0x00, 0x00, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -416,12 +417,16 @@ internal partial class FileAnalyzerService
             "cncrt32.exe",
         ], key => $"{key} (UNICODE)", Encoding.Unicode.GetBytes);
 
+        searchPatterns.Add("TEST1", Enumerable.Range(0, 256).Select(n => (byte)n).ToArray());
+        searchPatterns.Add("TEST2", Enumerable.Range(32, 95).Select(n => (byte)n).ToArray());
+
         _searchPatterns = searchPatterns.AsReadOnly();
     }
 
+    // The first 4 bytes of a file is the "Magic Word"
     static class MagicWords
     {
-        public static readonly MagicWord[] MultiMediaFusion2 = ["MMF2", "CNC2", "MFU2"];
+        public static readonly MagicWord[] MultiMediaFusion = ["MMF2", "CNC2", "MFU2"];
         public static readonly MagicWord[] Vitalize = ["PAME", "PAPP", "PAMU", "VTZ "];
         public static readonly MagicWord[] ClickAndCreate = ["GAME", "PAME", "GAMU", "PAMU", "CNC2"];
         public static readonly MagicWord[] TheGamesFactory = ["GAME", "PAME", "GAPP", "PAPP"];
@@ -493,12 +498,10 @@ internal partial class FileAnalyzerService
         {
             if (!parameters.DoSilently)
             {
-#pragma warning disable IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
                 configure.AddConsoleFormatter<CustomConsoleLoggerFormatter, ConsoleFormatterOptions>(configure =>
                 {
                     configure.IncludeScopes = false;
                 });
-#pragma warning restore IL2026
 
                 configure.AddConsole(configure =>
                 {
@@ -517,18 +520,29 @@ internal partial class FileAnalyzerService
         return (parameters, logger);
     }
 
-    private static IEnumerable<(string, ConsoleColor?)> GetLogo(FileVersionInfo versionInfo)
+    private static IEnumerable<(string, AnsiConsoleColor?)> GetLogo(FileVersionInfo versionInfo)
     {
-        yield return (@" _  ___ _ _     _____             _   _" + '\n', ConsoleColor.Blue);
-        yield return (@"| |/ / (_) |   / ____|           | | | |" + '\n', ConsoleColor.Blue);
-        yield return (@"| ' /| |_| | _| (___  _ __   ___ | |_| |_ ___ _ __" + '\n', ConsoleColor.Cyan);
-        yield return (@"|  < | | | |/ /\___ \| '_ \ / _ \| __| __/ _ \ '__|" + '\n', ConsoleColor.Yellow);
-        yield return (@"| . \| | |   < ____) | |_) | (_) | |_| ||  __/ |" + '\n', ConsoleColor.White);
-        yield return (@"|_|\_\_|_|_|\_\_____/| .__/ \___/ \__|\__\___|_|" + '\n', ConsoleColor.Yellow);
-        yield return (@"                     | |" + '\n', ConsoleColor.Cyan);
-        yield return (@"                     |_|  ", ConsoleColor.Blue);
-        yield return (string.Format("VERSION {0}.{1}\n", versionInfo.FileMajorPart, versionInfo.FileMinorPart * 10 + versionInfo.FileBuildPart), null);
+        yield return (@" _  ___ _ _     _____             _   _" + '\n', new(0xe8, 0x14, 0x16));
+        yield return (@"| |/ / (_) |   / ____|           | | | |" + '\n', new(0xe8, 0x14, 0x16));
+        yield return (@"| ' /| |_| | _| (___  _ __   ___ | |_| |_ ___ _ __" + '\n', new(0xff, 0xa5, 0x00));
+        yield return (@"|  < | | | |/ /\___ \| '_ \ / _ \| __| __/ _ \ '__|" + '\n', new(0xfa, 0xeb, 0x36));
+        yield return (@"| . \| | |   < ____) | |_) | (_) | |_| ||  __/ |" + '\n', new(0x79, 0xc3, 0x14));
+        yield return (@"|_|\_\_|_|_|\_\_____/| .__/ \___/ \__|\__\___|_|" + '\n', new(0x48, 0x7d, 0xe7));
+        yield return (@"                     | |" + '\n', new(0x4b, 0x36, 0x9d));
+        yield return (@"                     |_|  ", new(0x70, 0x36, 0x9d));
+        yield return (GetVersionString(versionInfo), null);
         yield return ("\n", null);
-        yield return ("By Rikard Bengtsson (yxkalle)\n", null);
+        yield return ("By Rikard Bengtsson (", null);
+        yield return ("yxkalle", AnsiConsoleColor.DarkYellow);
+        yield return (")\n", null);
+
+        static string GetVersionString(FileVersionInfo versionInfo)
+        {
+            string version = $"{versionInfo.FileMajorPart}.{versionInfo.FileMinorPart}";
+            if (versionInfo.FileBuildPart > 0 || versionInfo.FilePrivatePart > 0) version += $".{versionInfo.FileBuildPart}";
+            if (versionInfo.FilePrivatePart > 0) version += $".{versionInfo.FilePrivatePart}";
+
+            return $"VERSION {version}\n";
+        }
     }
 }

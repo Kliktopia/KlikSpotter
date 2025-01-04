@@ -23,11 +23,14 @@ internal static unsafe partial class Win32Helpers
         SetConsoleMode(handle, mode ^ ENABLE_VIRTUAL_TERMINAL_PROCESSING);
     }
 
-    public static bool HasAnsiColors()
+    public static bool HasAnsiColors
     {
-        nint handle = GetStdHandle(STD_OUTPUT_HANDLE);
-        GetConsoleMode(handle, out uint mode);
-        return (mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0;
+        get
+        {
+            nint handle = GetStdHandle(STD_OUTPUT_HANDLE);
+            GetConsoleMode(handle, out uint mode);
+            return (mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0;
+        }
     }
 
     public static bool TryGetPathRelativePath(string? from, string? to, [NotNullWhen(true)] out string? relativePath)

@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<!-- Framework and Output Settings -->
-		<TargetFramework>net9.0-windows</TargetFramework>
+		<TargetFramework>net9.0</TargetFramework>
 		<OutputType>Exe</OutputType>
 		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
 		<PublishTrimmed>True</PublishTrimmed>
@@ -14,11 +14,18 @@
 
 		<!-- NuGet Settings -->
 		<NuGetAuditMode>direct</NuGetAuditMode>
+		<FileVersion>2.0.3</FileVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DebugType>none</DebugType>
-		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+		<GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+		<NoWarn>1701;1702;IL2026;IL2104</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+	  <NoWarn>1701;1702;IL2026;IL2104</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

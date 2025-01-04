@@ -1,8 +1,8 @@
+using KlikSpotter.Configuration;
 using SharpCompress.Readers;
 
 namespace KlikSpotter;
 
-[KlikSpotterHelp]
 internal partial class FileAnalyzerService
 {
     private const int MAGIC_WORD_LENGTH = 4;
@@ -21,13 +21,21 @@ internal partial class FileAnalyzerService
     private readonly ILogger _logger;
 
     public FileAnalyzerService(AppParameters parameters)
-        => (_parameters, _logger) = GetProviders(parameters);
-
-    public void ProcessFiles()
     {
+        (_parameters, _logger) = GetProviders(parameters);
+
         if (_parameters.DoShowVersion)
             WriteVersionToConsole();
 
+        if (_parameters.DoDebug)
+        {
+            Parser.SaveSearchPatternsToJson(_searchPatterns);
+            var y = Parser.LoadSearchPatternsFromJson(@"C:\Temp\junk.txt");
+        }
+    }
+
+    public void ProcessFiles()
+    {
         int gameCount = 0;
         int installerCount = 0;
         foreach (string? filePath in Directory.GetFiles(
@@ -172,7 +180,7 @@ internal partial class FileAnalyzerService
                         {
                             case ".mfa":
                                 appType = "Multimedia Fusion 2 application";
-                                GetMatchingMagicWord(archiveReader, MagicWords.MultiMediaFusion2, out matchingMagicWord);
+                                GetMatchingMagicWord(archiveReader, MagicWords.MultiMediaFusion, out matchingMagicWord);
                                 break;
                             case ".ccn" or ".hts":
                                 appType = "Vitalize application";
@@ -543,19 +551,25 @@ internal partial class FileAnalyzerService
         return false;
     }
 
+    private static void WriteToConsole(string line, AnsiConsoleColor? color)
+    {
+        if (!color.HasValue || !Win32Helpers.HasAnsiColors)
+        {
+            Console.Write(line);
+            return;
+        }
+
+        Console.Write($"{color.Value}{line}{AnsiConsoleColor.Reset}");
+    }
+
     [DoesNotReturn]
     public void WriteVersionToConsole()
     {
         var versionInfo = FileVersionInfo.GetVersionInfo(_parameters.ProcessPath);
-        var originalColor = Console.ForegroundColor;
 
         foreach (var (line, color) in GetLogo(versionInfo))
-        {
-            //Console.ForegroundColor = color ?? originalColor;
-            Console.Write("\x1b[38;5;{0}m{1}", (int?)color ?? 0, line);
-        }
+            WriteToConsole(line, color);
 
-        Console.ForegroundColor = originalColor;
         Environment.Exit(0);
     }
 

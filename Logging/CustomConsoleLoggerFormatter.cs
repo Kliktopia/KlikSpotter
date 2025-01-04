@@ -7,7 +7,7 @@ internal class CustomConsoleLoggerFormatter: ConsoleFormatter
     public CustomConsoleLoggerFormatter()
         : base(nameof(CustomConsoleLoggerFormatter))
     {
-        _hadAnsiColors = Win32Helpers.HasAnsiColors();
+        _hadAnsiColors = Win32Helpers.HasAnsiColors;
         if (!_hadAnsiColors) Win32Helpers.ToggleAnsiColors();
     }
 

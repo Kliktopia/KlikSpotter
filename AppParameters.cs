@@ -3,6 +3,7 @@ namespace KlikSpotter;
 internal class AppParameters: ICommandParameterSet
 {
     public bool DoShowVersion;
+    public bool DoDebug;
     public bool DoCopy;
     public bool DoRecursiveSearch;
     public bool DoMoveOriginal;
@@ -14,29 +15,33 @@ internal class AppParameters: ICommandParameterSet
     public string SearchDirectory;
 
     public AppParameters(
-        [Option('v', Description = "Prompt Current Version.", StopParsingOptions = true)]
+        [Option(StopParsingOptions = true), Hidden]
+        bool debug,
+        [Option('v', Description = "Prompt current version.", StopParsingOptions = true)]
         bool version,
-        [Option('c', Description = "Copy (and Extract) Files that was Detected as a Klik Program.")]
+        [Option('c', Description = "Copy (and extract) files that were detected as a Kliky.")]
         bool copy,
-        [Option('r', Description = "Recursively Scan Sub Directories.")]
+        [Option('r', Description = "Recursively scan subdirectories.")]
         bool recursive,
-        [Option('m', Description = "Move Files that was Detected as a Klik Program to a Separate Directory. (!MOVED)")]
+        [Option('m', Description = "Move files that were detected as Kliky to a separate directory. (!MOVED)")]
         bool move,
-        [Option('s', Description = "Don't tell Me about the Details while Scanning.")]
+        [Option('s', Description = "Spare me the the details.")]
         bool silent,
-        [Option('f', Description = "Enable File Logging.")]
+        [Option('f', Description = "Enable file logging.")]
         bool fileLogging,
-        [Option('o', Description = "The Directory where to Copy or Move the Klik Games, Programs and Installers.")]
+        [Option('o', Description = "The directory where to copy or move the found Kliky stuff.")]
         string? output,
-        [Argument("input", Description = "The Directory where to Scan for Klik Games, Programs and Installers.")] string? input)
+        [Argument("input", Description = "The directory where to scan for Kliky stuff.")]
+        string? input)
     {
+        DoDebug = debug;
         DoShowVersion = version;
         DoCopy = copy;
         DoRecursiveSearch = recursive;
         DoMoveOriginal = move;
         DoSilently = silent;
         DoFileLogging = fileLogging;
-        DoFileLogging = fileLogging; ;
+        DoFileLogging = fileLogging;
 
         ProcessPath = Environment.ProcessPath!;
         ProcessDirectory = Path.GetDirectoryName(ProcessPath)!;

@@ -1,8 +1,8 @@
 {
-    "profiles": {
-        "KlikSpotter": {
-            "commandName": "Project",
-            "commandLineArgs": "-r C:\\Temp\\Sopor\\KlikTest --file-logging"
-        }
+  "profiles": {
+    "KlikSpotter": {
+      "commandName": "Project",
+      "commandLineArgs": "--version -r C:\\Temp\\Sopor\\KlikTest --file-logging"
     }
+  }
 }
