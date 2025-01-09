@@ -1,6 +1,5 @@
 global using System;
 global using System.Buffers;
-global using System.Collections;
 global using System.Collections.Generic;
 global using System.Diagnostics;
 global using System.Diagnostics.CodeAnalysis;
@@ -16,10 +15,12 @@ global using Microsoft.Extensions.Logging.Abstractions;
 global using Microsoft.Extensions.Logging.Console;
 
 global using Cocona;
-global using Cocona.Command;
-global using Cocona.Help;
-global using Cocona.Help.DocumentModel;
-global using KlikSpotter;
+global using SharpCompress.Readers;
+
+global using KlikSpotter.Comparers;
+global using KlikSpotter.Configuration;
+global using KlikSpotter.Helpers;
+global using KlikSpotter.Logging;
+global using KlikSpotter.Service;
 
 global using LogLevel = Microsoft.Extensions.Logging.LogLevel;
-global using NumberStyles = System.Globalization.NumberStyles;

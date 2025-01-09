@@ -2,7 +2,7 @@
   "profiles": {
     "KlikSpotter": {
       "commandName": "Project",
-      "commandLineArgs": "--version -r C:\\Temp\\Sopor\\KlikTest --file-logging"
+      "commandLineArgs": "--reset-config --recursive --copy --file-logging C:\\Temp\\Sopor\\KlikTest"
     }
   }
 }

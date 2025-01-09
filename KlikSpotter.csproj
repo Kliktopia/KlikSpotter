@@ -15,6 +15,7 @@
 		<!-- NuGet Settings -->
 		<NuGetAuditMode>direct</NuGetAuditMode>
 		<FileVersion>2.0.3</FileVersion>
+		<PublishAot>True</PublishAot>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

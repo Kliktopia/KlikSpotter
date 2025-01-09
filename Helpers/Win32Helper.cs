@@ -1,20 +1,12 @@
-namespace KlikSpotter;
+namespace KlikSpotter.Helpers;
 
-internal static unsafe partial class Win32Helpers
+internal static unsafe partial class Win32Helper
 {
+    private const int MAX_PATH = 0x8000;
     private const uint STD_OUTPUT_HANDLE = ~10U;
     private const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 4;
-    private const uint FILE_ATTRIBUTE_INVALID = ~0U;
-    private static readonly PinnedArrayHandle<sbyte> _pathHandle;
-    private static readonly sbyte[] _pathBuffer;
-
-    static Win32Helpers()
-    {
-        const uint MAX_PATH = 0x8000;
-
-        _pathBuffer = new sbyte[MAX_PATH];
-        _pathHandle = new(_pathBuffer);
-    }
+    
+    public const uint FILE_ATTRIBUTE_INVALID = ~0U;
 
     public static void ToggleAnsiColors()
     {
@@ -48,17 +40,22 @@ internal static unsafe partial class Win32Helpers
             return true;
         }
 
+        sbyte* buffer = stackalloc sbyte[MAX_PATH];
+
         if ((attrFrom = GetFileAttributes($@"\\?\{from}")) == FILE_ATTRIBUTE_INVALID ||
             (attrTo = GetFileAttributes($@"\\?\{to}")) == FILE_ATTRIBUTE_INVALID ||
-            (!PathRelativePathTo(_pathBuffer, from, attrFrom, to, attrTo)))
+            (!PathRelativePathTo(buffer, from, attrFrom, to, attrTo)))
         {
             relativePath = null;
             return false;
         }
 
-        relativePath = Marshal.PtrToStringUni(_pathHandle.DangerousGetHandle());
+        relativePath = Marshal.PtrToStringUni((IntPtr)buffer);
         return relativePath is not null;
     }
+
+    public static bool IsValidPath(string path)
+        => GetFileAttributes($@"\\?\{path}") != FILE_ATTRIBUTE_INVALID;
 
     [LibraryImport("kernel32.dll", SetLastError = true)]
     private static partial nint GetStdHandle(uint handle);
@@ -77,7 +74,7 @@ internal static unsafe partial class Win32Helpers
     [LibraryImport("shlwapi.dll", EntryPoint = "PathRelativePathToW", StringMarshalling = StringMarshalling.Utf16)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool PathRelativePathTo(
-        [Out] sbyte[] pszPath,
+        sbyte* pszPath,
         [MarshalAs(UnmanagedType.LPWStr)] string pszFrom,
         uint dwAttrFrom,
         [MarshalAs(UnmanagedType.LPWStr)] string pszTo,

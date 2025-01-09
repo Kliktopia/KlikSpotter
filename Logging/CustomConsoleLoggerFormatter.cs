@@ -1,3 +1,5 @@
+using System.Drawing;
+
 namespace KlikSpotter.Logging;
 
 internal class CustomConsoleLoggerFormatter: ConsoleFormatter
@@ -7,13 +9,13 @@ internal class CustomConsoleLoggerFormatter: ConsoleFormatter
     public CustomConsoleLoggerFormatter()
         : base(nameof(CustomConsoleLoggerFormatter))
     {
-        _hadAnsiColors = Win32Helpers.HasAnsiColors;
-        if (!_hadAnsiColors) Win32Helpers.ToggleAnsiColors();
+        _hadAnsiColors = Win32Helper.HasAnsiColors;
+        if (!_hadAnsiColors) Win32Helper.ToggleAnsiColors();
     }
 
     ~CustomConsoleLoggerFormatter()
     {
-        if (!_hadAnsiColors) Win32Helpers.ToggleAnsiColors();
+        if (!_hadAnsiColors) Win32Helper.ToggleAnsiColors();
     }
 
     public override void Write<TState>(
@@ -24,20 +26,23 @@ internal class CustomConsoleLoggerFormatter: ConsoleFormatter
         string? message = logEntry.Formatter?.Invoke(logEntry.State, logEntry.Exception);
         if (message is null) return;
 
-        var originalColor = Console.ForegroundColor;
-        Console.ForegroundColor = GetLogLevelColor(logEntry.LogLevel);
-        textWriter.WriteLine(message);
-        Console.ForegroundColor = originalColor;
-
-        static ConsoleColor GetLogLevelColor(LogLevel logLevel) => logLevel switch
+        if (Win32Helper.HasAnsiColors)
         {
-            LogLevel.Trace => ConsoleColor.Gray,
-            LogLevel.Debug => ConsoleColor.Gray,
-            LogLevel.Information => ConsoleColor.White,
-            LogLevel.Warning => ConsoleColor.Yellow,
-            LogLevel.Error => ConsoleColor.Magenta,
-            LogLevel.Critical => ConsoleColor.Red,
-            _ => ConsoleColor.White,
+            var color = GetLogLevelColor(logEntry.LogLevel);
+            message = $"{color}{message}{AnsiConsoleColor.Reset}";
+        }
+            
+        textWriter.WriteLine(message);
+
+        static AnsiConsoleColor GetLogLevelColor(LogLevel logLevel) => logLevel switch
+        {
+            LogLevel.Trace => AnsiConsoleColor.BrightBlack,
+            LogLevel.Debug => AnsiConsoleColor.DarkCyan,
+            LogLevel.Information => AnsiConsoleColor.DarkWhite,
+            LogLevel.Warning => AnsiConsoleColor.BrightYellow,
+            LogLevel.Error => AnsiConsoleColor.BrightMagenta,
+            LogLevel.Critical => AnsiConsoleColor.BrightRed,
+            _ => AnsiConsoleColor.White,
         };
     }
 }

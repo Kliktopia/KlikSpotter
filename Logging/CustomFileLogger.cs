@@ -37,14 +37,16 @@ public class CustomFileLogger(StreamWriter logFileWriter): ILogger
 
         int start, end;
         while ((start = message.IndexOf('\x1b')) != -1
-            && (end = message.IndexOf('m', start)) != -1)
-            message = message[(end + 1)..];
+            && start + 1 < message.Length
+            && (end = message.IndexOf('m', start + 1)) != -1)
+            message = message[..start] + message[(end + 1)..];
 
         return message;
     }
 }
 
-file class NullDisposable: IDisposable
+internal class NullDisposable: IDisposable
 {
-    public void Dispose() { }
+    public void Dispose()
+    { }
 }
